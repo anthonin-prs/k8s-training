@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: postgres-pod
+  labels:
+    app: webapp
+    tier: database
+  namespace: default
+spec:
+  containers:
+    - name: postgres-container
+      image: postgres
+      ports:
+        - containerPort: 5432
+      env:
+        - name: POSTGRES_DB
+          value: postgresdb
+        - name: POSTGRES_USER
+          value: admin
+        - name: POSTGRES_PASSWORD
+          value: admin
+      resources:
+        requests:
+          cpu: 600m
+          memory: 400Mi
+        limits:
+          cpu: 1200m
+          memory: 900Mi
+      imagePullPolicy: IfNotPresent
+
+  restartPolicy: Always

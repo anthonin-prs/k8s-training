@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-deployment
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.postgres.ressources.replicas }}
+  selector:
+    matchLabels:
+      app: webapp
+      tier: database
+  template:
+    metadata:
+      labels:
+        app: webapp
+        tier: database
+    spec:
+      containers:
+        - name: postgres-container
+          image: postgres
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_USER
+              value: {{ .Values.postgres.config.admin_username }}
+          envFrom:
+            - secretRef:
+                name: postgres-secret
+            - configMapRef:
+                name: postgres-config
+          resources:
+            requests:
+              cpu: {{ .Values.postgres.ressources.requests.cpu }}
+              memory: {{ .Values.postgres.ressources.requests.memory }}
+            limits:
+              cpu: {{ .Values.postgres.ressources.limits.cpu }}
+              memory: {{ .Values.postgres.ressources.limits.memory }}
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: postgres-volume
+              mountPath: /data
+
+      volumes:
+        - name: postgres-volume
+          persistentVolumeClaim:
+            claimName: postgres-pvc
+      restartPolicy: Always

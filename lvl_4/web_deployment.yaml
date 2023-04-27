@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: adminer-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: webapp
+      tier: frontend
+  template:
+    metadata:
+      labels:
+        app: webapp
+        tier: frontend
+    spec:
+      containers:
+        - name: adminer-container
+          image: adminer
+          ports:
+            - containerPort: 8080
+          env:
+            - name: ADMINER_DESIGN
+              value: "pappu687"
+          resources:
+            requests:
+              cpu: 500m
+              memory: 200Mi
+            limits:
+              cpu: 1000m
+              memory: 600Mi
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: web-volume
+              mountPath: /data
+      volumes:
+        - name: web-volume
+          persistentVolumeClaim:
+            claimName: web-pvc
+      restartPolicy: Always

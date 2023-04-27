@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webapp
+      tier: database
+  template:
+    metadata:
+      labels:
+        app: webapp
+        tier: database
+    spec:
+      containers:
+        - name: postgres-container
+          image: postgres
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_USER
+              value: admin
+          envFrom:
+            - secretRef:
+                name: postgres-secret
+            - configMapRef:
+                name: postgres-config
+          resources:
+            requests:
+              cpu: 600m
+              memory: 400Mi
+            limits:
+              cpu: 1200m
+              memory: 900Mi
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: postgres-volume
+              mountPath: /data
+
+      volumes:
+        - name: postgres-volume
+          persistentVolumeClaim:
+            claimName: postgres-pvc
+      restartPolicy: Always
