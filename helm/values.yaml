@@ -1,0 +1,26 @@
+namespace: default
+postgres:
+    config:
+        db_name: database
+        admin_username: admin
+        admin_password: password
+    ressources:
+        replicas: 1
+        storage: 15Gi
+        requests:
+            cpu: 400m
+            memory: 500Mi
+        limits:
+            cpu: 1000m
+            memory: 1500Mi
+adminer:
+    config:
+        design: pappu687
+    ressources:
+        requests:
+            cpu: 200m
+            memory: 200Mi
+        limits:
+            cpu: 400m
+            memory: 500Mi
+        storage: 5Gi

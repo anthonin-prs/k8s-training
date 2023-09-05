@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: adminer-deployment
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: webapp
+      tier: frontend
+  template:
+    metadata:
+      labels:
+        app: webapp
+        tier: frontend
+    spec:
+      containers:
+        - name: adminer-container
+          image: adminer
+          ports:
+            - containerPort: 8080
+          env:
+            - name: ADMINER_DESIGN
+              value: {{ .Values.adminer.config.design }}
+          resources:
+            requests:
+              cpu: {{ .Values.adminer.ressources.requests.cpu }}
+              memory: {{ .Values.adminer.ressources.requests.memory }}
+            limits:
+              cpu: {{ .Values.adminer.ressources.limits.cpu }}
+              memory: {{ .Values.adminer.ressources.limits.memory }}
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: web-volume
+              mountPath: /data
+      volumes:
+        - name: web-volume
+          persistentVolumeClaim:
+            claimName: web-pvc
+      restartPolicy: Always

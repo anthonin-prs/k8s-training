@@ -1,0 +1,2 @@
+helm create my-helm
+helm install my-helm . -f values.yaml
